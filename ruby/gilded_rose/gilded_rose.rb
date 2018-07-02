@@ -76,8 +76,8 @@ class LimitedEventItem < CollectableItem
 end
 
 class LegendaryItem < NormalItem
-  def change(item)
-  end
+  def self.quality!; end
+  def self.sell_in!; end
 end
 
 class ConjuredItem < NormalItem
