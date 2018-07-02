@@ -95,16 +95,27 @@ describe GildedRose do
   context 'Limited Events' do
     describe '#limited_event' do
       # 'Backstage passes', like aged brie, increases in Quality as its SellIn value approaches;
-      # Quality increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but
-      let(:items) { [backstage_pass]}
+      let(:less_than_ten_days) { Item.new(name='Backstage passes to a TAFKAL80ETC concert', sell_in=9, quality=20) }
+      let(:less_than_five_days) { Item.new(name='Backstage passes to a TAFKAL80ETC concert', sell_in=4, quality=20) }
+      let(:event_ended) { Item.new(name='Backstage passes to a TAFKAL80ETC concert', sell_in=0, quality=20) }
 
-      it 'Increases in quality' do
-        pending('Increases in quality')
+      # TODO: move 'Increases in quality' to shared example
+      # Quality increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but
+      it 'Increases by 2 when there are less than 10 days' do
+        rose = GildedRose.new([less_than_ten_days])
+        expect{ rose.update_quality }.to change{ rose.items.first.quality }.by(2)
+      end
+
+      it 'Increases by 3 when there are less than 5 days' do
+        rose = GildedRose.new([less_than_ten_days])
+        expect{ rose.update_quality }.to change{ rose.items.first.quality }.by(3)
       end
 
       # Quality drops to 0 after the concert
       it 'Worthless(0) after event' do
-        pending('Worthless after event')
+        rose = GildedRose.new([event_ended])
+        rose.update_quality
+        expect(rose.items.first.quality).to eq 0
       end
     end
   end
