@@ -20,6 +20,8 @@ describe GildedRose do
     ]}
 
   let(:collectables){ [brie, backstage_pass] }
+  let(:legendary_items){ [sulfuras] }
+  let(:conjured){ [Item.new(name="Conjured Mana Cake", sell_in=3, quality=6)] }
 
   describe '#update_quality' do
     it 'does not change the name' do
@@ -121,25 +123,36 @@ describe GildedRose do
   end
 
   context 'Legendary Items' do
+    let(:rose) { GildedRose.new(legendary_items) }
+
     describe '#legendary_items' do
       # 'Sulfuras', being a legendary item, never has to be sold or decreases in Quality
       it 'never has to be sold ' do
         # TODO: get clarification because all items decrease in sellin
-        pending('Onever has to be sold ')
+        # what if started with negative?
+        rose.items.each do |item|
+          expect{ rose.update_quality }.not_to change{ item.sell_in }
+        end
       end
 
       # Sulfuras starts with quality of 80 and it never alters.
       it 'never decreases in Quality' do
-        pending('decreases in Quality')
+        rose.items.each do |item|
+          expect{ rose.update_quality }.not_to change{ item.quality }
+        end
       end
     end
   end
 
   context 'Conjured Items' do
-    describe '#conjured' do
+    let(:rose) { GildedRose.new(conjured) }
+
+    describe '#quality' do
       # 'Conjured' items degrade in Quality twice as fast as normal items
       it 'degrade in Quality twice as fast as normal items' do
-        pending('degrade in Quality twice as fast as normal items')
+        rose.items.each do |item|
+          expect{ rose.update_quality }.to change{ item.quality }.by(-2)
+        end
       end
     end
   end
