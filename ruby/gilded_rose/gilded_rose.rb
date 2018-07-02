@@ -1,4 +1,3 @@
-require 'active_support/concern'
 require_relative 'item'
 
 class GildedRose
@@ -47,6 +46,13 @@ class NormalItem
   end
 end
 
+class CollectableItem < NormalItem
+  MAX_INCREASE = 50
+  def self.quality!
+    @item.quality += 1 unless @item.quality >= MAX_INCREASE
+  end
+end
+
 # TODO: this makes more sense as a mixin rather than inheritence
 class LimitedEventItem < NormalItem
 end
@@ -57,8 +63,4 @@ class LegendaryItem < NormalItem
 end
 
 class ConjuredItem < NormalItem
-end
-
-class CollectableItem < NormalItem
-
 end

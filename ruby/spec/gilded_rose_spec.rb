@@ -19,7 +19,7 @@ describe GildedRose do
       sulfuras
     ]}
 
-  let(:collectables){ [brie, backstage_pass] }
+  let(:collectables){ [brie] }
   let(:legendary_items){ [sulfuras] }
   let(:conjured){ [Item.new(name="Conjured Mana Cake", sell_in=3, quality=6)] }
 
