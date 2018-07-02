@@ -1,4 +1,9 @@
 require_relative 'item'
+require_relative 'normal_item'
+require_relative 'collectable_item'
+require_relative 'legendary_item'
+require_relative 'limited_event_item'
+require_relative 'conjured_item'
 
 class GildedRose
   attr_reader :items
@@ -12,7 +17,6 @@ class GildedRose
     "Backstage passes to a TAFKAL80ETC concert" => :limited_event # prices increase with near event, worthless after
   }
 
-
   def initialize(items)
     @items = items
   end
@@ -23,71 +27,5 @@ class GildedRose
       classname = type.to_s.split('_').map{|s| s.capitalize}.join
       Module.const_get("#{classname}Item").change(item)
     end
-  end
-end
-
-class NormalItem
-  QUALITY_DELTA = 1
-  SELL_IN_DELTA = 1
-
-  def self.change(item)
-    @quality_delta ||= QUALITY_DELTA
-    @item = item
-    sell_in!
-    quality!
-  end
-
-  def self.sell_in!
-    @item.sell_in -= SELL_IN_DELTA
-  end
-
-  def self.quality!
-    @item.quality -= @quality_delta unless @item.quality == 0
-    # additional depreciation for sell in
-    if @item.quality >= @quality_delta && @item.sell_in < 0
-      @item.quality -= @quality_delta
-    end
-  end
-
-  def self.worthless?
-    @item.sell_in <= 0
-  end
-end
-
-class CollectableItem < NormalItem
-  MAX_INCREASE = 50
-  def self.quality!
-    @item.quality += 1 unless @item.quality >= MAX_INCREASE
-  end
-end
-
-# TODO: this makes more sense as a mixin rather than inheritence
-class LimitedEventItem < CollectableItem
-  def self.quality!
-    super
-
-    return @item.quality = 0 if worthless?
-
-    if @item.quality <= MAX_INCREASE
-      @item.quality += 1 if @item.sell_in < 10
-    end
-
-    if @item.quality <= MAX_INCREASE
-      @item.quality += 1 if @item.sell_in < 5
-    end
-
-  end
-end
-
-class LegendaryItem < NormalItem
-  def self.quality!; end
-  def self.sell_in!; end
-end
-
-class ConjuredItem < NormalItem
-  QUALITY_DELTA = 2
-  def self.change(item)
-    @quality_delta = QUALITY_DELTA
-    super
   end
 end
