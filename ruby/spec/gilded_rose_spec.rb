@@ -45,20 +45,32 @@ describe GildedRose do
       let(:rose) { GildedRose.new(normal_items) }
 
       it 'Sell-in always decreases' do
-        rose.items.each_with_index do |item, index|
+        rose.items.each do |item|
           expect{ rose.update_quality }.to change{ item.sell_in }.by(-1)
         end
       end
     end
 
-    # Clarification: an item can never have its Quality increase above 50 - but it can start above 50
-    it 'Quality of an item is never "raised" more than 50' do
-      pending('Quality of an item is never more than 50')
-    end
+    describe '#quality' do
+      let(:max_brie) { Item.new(name='Aged Brie', sell_in=2, quality=50) }
+      let(:expired) { Item.new('expired', 0, quality=50) }
 
-    # Once the sell by date has passed, Quality degrades twice as fast
-    it 'Once the sell by date has passed, Quality degrades twice as fast' do
-      pending('Once the sell by date has passed, Quality degrades twice as fast')
+      # Clarification: an item can never have its Quality increase above 50 - but it can start above 50
+      it 'Quality of an item is never "raised" more than 50' do
+        rose = GildedRose.new([max_brie, expired])
+        rose.update_quality
+        rose.items.each do |item|
+          expect(0..50).to cover(item.quality)
+        end
+      end
+
+      # Once the sell by date has passed, Quality degrades twice as fast
+      it 'Once the sell by date has passed, Quality degrades twice as fast' do
+        rose = GildedRose.new([expired])
+        rose.items.each do |item|
+          expect{ rose.update_quality }.to change{ item.quality }.by(-2)
+        end
+      end
     end
   end
 
