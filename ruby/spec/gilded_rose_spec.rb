@@ -109,7 +109,7 @@ describe GildedRose do
       end
 
       it 'Increases by 3 when there are less than 5 days' do
-        rose = GildedRose.new([less_than_ten_days])
+        rose = GildedRose.new([less_than_five_days])
         expect{ rose.update_quality }.to change{ rose.items.first.quality }.by(3)
       end
 
