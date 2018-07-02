@@ -29,7 +29,6 @@ describe GildedRose do
     end
   end
 
-  # The Quality of an item is never negative
   describe '#quality' do
     let(:rose) { GildedRose.new([expired]) }
     it 'Quality is never negative for all items' do
@@ -38,8 +37,21 @@ describe GildedRose do
         expect(item.quality).to be >= 0
       end
     end
+  end
 
-    # The Quality of an item is never more than 50
+  context 'normal items' do
+    let(:normal_items) { [expired, elixir, dexterity_vest] }
+    describe '#sell_in' do
+      let(:rose) { GildedRose.new(normal_items) }
+
+      it 'Sell-in always decreases' do
+        rose.items.each_with_index do |item, index|
+          expect{ rose.update_quality }.to change{ item.sell_in }.by(-1)
+        end
+      end
+    end
+
+    # Clarification: an item can never have its Quality increase above 50 - but it can start above 50
     it 'Quality of an item is never "raised" more than 50' do
       pending('Quality of an item is never more than 50')
     end
@@ -47,14 +59,6 @@ describe GildedRose do
     # Once the sell by date has passed, Quality degrades twice as fast
     it 'Once the sell by date has passed, Quality degrades twice as fast' do
       pending('Once the sell by date has passed, Quality degrades twice as fast')
-    end
-  end
-
-  context 'normal items' do
-    describe '#sell_in' do
-      it 'Sell-in always decreases' do
-        pending('Sell-in always decreases')
-      end
     end
   end
 
