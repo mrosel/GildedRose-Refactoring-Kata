@@ -19,6 +19,8 @@ describe GildedRose do
       sulfuras
     ]}
 
+  let(:collectables){ [brie, backstage_pass] }
+
   describe '#update_quality' do
     it 'does not change the name' do
       rose = GildedRose.new(items)
@@ -55,15 +57,6 @@ describe GildedRose do
       let(:max_brie) { Item.new(name='Aged Brie', sell_in=2, quality=50) }
       let(:expired) { Item.new('expired', 0, quality=50) }
 
-      # Clarification: an item can never have its Quality increase above 50 - but it can start above 50
-      it 'Quality of an item is never "raised" more than 50' do
-        rose = GildedRose.new([max_brie, expired])
-        rose.update_quality
-        rose.items.each do |item|
-          expect(0..50).to cover(item.quality)
-        end
-      end
-
       # Once the sell by date has passed, Quality degrades twice as fast
       it 'Once the sell by date has passed, Quality degrades twice as fast' do
         rose = GildedRose.new([expired])
@@ -74,13 +67,27 @@ describe GildedRose do
     end
   end
 
-  context 'collectable' do
+  context 'Acts as a Collectable' do
+    let(:max_brie) { Item.new(name='Aged Brie', sell_in=2, quality=50) }
+
     # 'Aged Brie' actually increases in Quality the older it gets
-    describe '#collectable' do
+    describe '#quality' do
       let(:items) { [brie] }
+      let(:rose) { GildedRose.new(collectables) }
 
       it 'Increases in quality' do
-        pending('Increases in quality')
+        rose.items.each do |item|
+          expect{ rose.update_quality }.to change{ item.quality }.by(1)
+        end
+      end
+
+      # Clarification: an item can never have its Quality increase above 50 - but it can start above 50
+      it 'Quality of an item is never "raised" more than 50' do
+        rose = GildedRose.new([max_brie])
+        rose.update_quality
+        rose.items.each do |item|
+          expect(0..50).to cover(item.quality)
+        end
       end
     end
   end
