@@ -1,3 +1,4 @@
+require 'active_support/inflector'
 require_relative 'item'
 require_relative 'normal_item'
 require_relative 'collectable_item'
@@ -23,9 +24,10 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
-      type = (SPECIAL_ITEMS_PROPERTY[item.name] || 'Normal').to_s.capitalize
-      classname = type.to_s.split('_').map{|s| s.capitalize}.join
-      Module.const_get("#{classname}Item").change(item)
+      type = (SPECIAL_ITEMS_PROPERTY[item.name] || 'Normal')
+      "#{type}_item".camelize
+              .constantize
+              .change(item)
     end
   end
 end
